@@ -16,23 +16,28 @@ import java.util.concurrent.TimeUnit;
 
 public class GUI {
     private static JFrame frame = new JFrame();
+
+    static int midiDevice = 5;
+
     static boolean hiHatClosed = false;
     static int hiHatClosedThreshold = 80;
-
     static int hiHatMax = 90;
     static int hiHatPos = 0;
+
     static int graphMax = 100;
     static int updateMs = 10;
 
     static int x = GUILayout.uiLayout.size();
     static int y = GUILayout.uiLayout.get(0).length;
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    static DefaultCategoryDataset[][] datasets = new DefaultCategoryDataset[x][y];
 
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    static DefaultCategoryDataset[][] datasets = new DefaultCategoryDataset[x][y];
     static JFreeChart[][] charts = new JFreeChart[x][y];
     static JLabel[][] labels = new JLabel[x][y];
     static float[][] lastInput = new float[x][y];
     static Color[][] colours = new Color[x][y];
+    
     static JPanel panel = new JPanel();
 
     public GUI() {
@@ -41,10 +46,6 @@ public class GUI {
 
         for (int i = 0; i < GUILayout.uiLayout.size(); i++) {
             for (int j = 0; j < y; j++) {
-                /*indicators[i][j].setStringPainted(true);
-                indicators[i][j].setString(MidiInputs.idToName.get(GUILayout.uiLayout.get(i)[j]));
-                indicators[i][j].setValue(0);
-                panel.add(indicators[i][j]);*/
                 charts[i][j].getCategoryPlot().getRangeAxis().setRange(0, 127);
                 BufferedImage img = charts[i][j].createBufferedImage(500, 270);
                 labels[i][j].setIcon(new ImageIcon(img));
@@ -54,7 +55,7 @@ public class GUI {
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("this is so cool");
+        frame.setTitle("Midi GUI");
         frame.pack();
         frame.setVisible(true);
     }
@@ -102,7 +103,7 @@ public class GUI {
         new GUI();
         try {
             MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-            MidiDevice device = MidiSystem.getMidiDevice(infos[5]);
+            MidiDevice device = MidiSystem.getMidiDevice(infos[midiDevice]);
             device.open();
             device.getTransmitter().setReceiver(new Receiver() {
                 @Override
