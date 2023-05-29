@@ -18,6 +18,31 @@ public class MidiInputs {
         put("t3", new int[]{43, 58});
     }};
 
+    public static Map<Integer, String> midiToId = new HashMap<>() {{
+        put(49, "crash1");
+        put(55, "crash1");
+        put(57, "crash2");
+        put(52, "crash2");
+        put(51, "ride");
+        put(59, "ride");
+        put(53, "ride");
+        put(46, "hhc");
+        put(26, "hhc");
+        put(42, "hhc");
+        put(22, "hhc");
+        put(44, "hhp");
+        put(38, "snare");
+        put(40, "snarer");
+        put(36, "bass");
+        put(27, "bass");
+        put(48, "t1");
+        put(50, "t1");
+        put(47, "t2");
+        put(45, "t2");
+        put(43, "t3");
+        put(58, "t3");
+    }};
+
     public static Map<String, String> idToName = new HashMap<>() {{
         put("crash1", "Crash 1");
         put("crash2", "Crash 2");

@@ -30,6 +30,10 @@ public class GUI {
     static int x = GUILayout.uiLayout.size();
     static int y = GUILayout.uiLayout.get(0).length;
 
+    static int PITCH_BEND = 176;
+    static int NOTE_ON = 144;
+    static int NOTE_OFF = 128;
+
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     static DefaultCategoryDataset[][] datasets = new DefaultCategoryDataset[x][y];
@@ -112,14 +116,14 @@ public class GUI {
                         ShortMessage sm = (ShortMessage) message;
                         int data = sm.getData1();
 
-                        if (sm.getCommand() == 176) {
+                        if (sm.getCommand() == PITCH_BEND) {
                             if (sm.getData1() == 4) {
                                 int[] hhpPos = GUILayout.getPos("hhp");
                                 hiHatClosed = sm.getData2() > hiHatClosedThreshold;
                                 hiHatPos = sm.getData2();
                                 lastInput[hhpPos[0]][hhpPos[1]] = hiHatPos;
                             }
-                        } else if (sm.getCommand() == 144) {
+                        } else if (sm.getCommand() == NOTE_ON) {
                             System.out.println("note on: " + sm.getData1());
                             int intensity = sm.getData2();
                             if (containsInt(MidiInputs.idToMidi.get("hhc"), data)) {
@@ -133,28 +137,22 @@ public class GUI {
                                     colours[hhoPos[0]][hhoPos[1]] = Color.GREEN;
                                 }
                             } else {
-                                for (int i = 0; i < GUILayout.uiLayout.size(); i++) {
-                                    for (int j = 0; j < GUILayout.uiLayout.get(0).length; j++) {
-                                        if (containsInt(MidiInputs.idToMidi.get(GUILayout.uiLayout.get(i)[j]), data)) {
-                                            lastInput[i][j] = intensity;
-                                            colours[i][j] = Color.GREEN;
-                                        }
-                                    }
-                                }
+                                String id = MidiInputs.midiToId.get(data);
+                                if (id == null) return;
+                                int[] pos = GUILayout.getPos(id);
+                                lastInput[pos[0]][pos[1]] = intensity;
+                                colours[pos[0]][pos[1]] = Color.GREEN;
                             }
-                        } else if (sm.getCommand() == 128) {
+                        } else if (sm.getCommand() == NOTE_OFF) {
                             if (containsInt(MidiInputs.idToMidi.get("hhp"), data)) {
                                 int[] hhoPos = GUILayout.getPos("hho");
                                 lastInput[hhoPos[0]][hhoPos[1]] = 0;
                                 colours[hhoPos[0]][hhoPos[1]] = Color.WHITE;
                             }
-                            for (int i = 0; i < GUILayout.uiLayout.size(); i++) {
-                                for (int j = 0; j < GUILayout.uiLayout.get(0).length; j++) {
-                                    if (containsInt(MidiInputs.idToMidi.get(GUILayout.uiLayout.get(i)[j]), data)) {
-                                        colours[i][j] = Color.WHITE;
-                                    }
-                                }
-                            }
+                            String id = MidiInputs.midiToId.get(data);
+                            if (id == null) return;
+                            int[] pos = GUILayout.getPos(id);
+                            colours[pos[0]][pos[1]] = Color.WHITE;
                         }
                     }
                 }
